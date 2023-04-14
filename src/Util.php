@@ -6,6 +6,12 @@ use Unirest\Request;
 use Unirest\Request\Body;
 
 class Util{
+    public static function getMilliseconds(){
+        list($msec, $sec) = explode(' ', microtime());    
+        $msectime =  (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);    
+        return $msectimes = substr($msectime,0,13);
+    }
+
     public static function requestBlockNumber($url,$rsaPrivate){
         
     }
