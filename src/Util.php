@@ -6,6 +6,16 @@ use Unirest\Request;
 use Unirest\Request\Body;
 use EChain\Formatter;
 
+class HttpReponse{
+    public $response;
+    public $error;
+  
+    public function __construct($response,$error){
+      $this->response = $response;
+      $this->error = $error;
+    }
+}
+
 class Util{
     public static function getMilliseconds(){
         list($msec, $sec) = explode(' ', microtime());    

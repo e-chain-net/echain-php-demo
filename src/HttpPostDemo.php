@@ -47,9 +47,29 @@ echo "Input for ownerOf:" . $inputOwnerOf . "\n";
 $getOwnerOfReq = [
   'jsonRpc' => [
     'method'=>'call',
-    'params'=>["group0","",$contractAddress,$inputOwnerOf]
+    'params'=>[$contractAddress,$inputOwnerOf]
   ]
 ];
+
+//请求tokenOwner地址，token未铸造，返回空
+function requestTokenOwner($contractAddress,$tokenId){
+  global $query_url,$getOwnerOfReq,$mechatNo,$rsa;
+  $response = Util::http_post($query_url,$getOwnerOfReq,$mechatNo,$rsa);
+  
+  // Util::echo_response($response);
+  
+  $obj = json_decode($response->response);
+  if($obj->{'code'} != "EC000000"){
+    echo "requestTokenOwner error:" . $obj->{"message"};
+    return "";
+  }
+  $output = $obj->data->jsonRpcResp->result->output;
+  if(strlen($output) == 66){
+    return "0x" . substr($output,26);
+  }else{
+    return "";
+  }
+}
 
 echo "Owner of req payload:" . json_encode($getOwnerOfReq) . "\n";
 
@@ -57,23 +77,26 @@ $query_url = "http://10.168.3.30:8080/chain/rpc/query";
 $sendtx_url = "http://10.168.3.30:8080/chain/rpc/tx";
 
 $response = Util::http_post($query_url,$blockNumberReq,$mechatNo,$rsa);
-echo '查询 blockNumber' . '\n';
+echo '查询 blockNumber:' . "\n";
 Util::echo_response($response);
+echo "\n";
 
 $response = Util::http_post($query_url,$blockLimitReq,$mechatNo,$rsa);
-echo '查询 blockLimit' . '\n';
+echo '查询 blockLimit:' . "\n";
 Util::echo_response($response);
+echo "\n";
 
 $response = Util::http_post($query_url,$getTxReceiptReq,$mechatNo,$rsa);
-echo '查询 transactionReceipt' . '\n';
+echo '查询 transactionReceipt:' . "\n";
 Util::echo_response($response);
+echo "\n";
 
-
-$response = Util::http_post($query_url,$getOwnerOfReq,$mechatNo,$rsa);
-echo '查询 token所有者地址' . '\n';
-Util::echo_response($response);
+echo '查询 token所有者地址:' . "\n";
+$address = requestTokenOwner($contractAddress,$tokenId);
+echo "Owner地址：" . $address  . "\n";
+echo "\n";
 
 $response = Util::http_post($sendtx_url,$sendTxReq,$mechatNo,$rsa);
-echo '交易发送' . '\n';
+echo '交易发送:' . "\n";
 Util::echo_response($response);
 
