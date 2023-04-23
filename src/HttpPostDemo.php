@@ -1,6 +1,7 @@
 <?php
 
 namespace EChainDemo;
+use Exception;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -10,95 +11,71 @@ $rsa=new Rsa($publicKey,$privateKey);
 
 $mechatNo = '1020000189025321';
 
-$blockNumberReq = [
-  'jsonRpc' => [
-    'method'=>'getBlockLimit',
-    'params'=>[]
-  ]
-];
-
-$blockLimitReq = [
-  'jsonRpc' => [
-    'method'=>'getBlockNumber',
-    'params'=>[]
-  ]
-];
-
-$getTxReceiptReq = [
-  'jsonRpc' => [
-    'method'=>'getTransactionReceipt',
-    'params'=>["0x3ac02bbaca5e7e0adc05d0e36954c86ee39108d543542a49eed7420d445d2536",false]
-  ]
-];
-
-$sendTxReq = [
-  'reqNo'=>'0x3ac02bbaca5e7e0adc05d0e36954c86ee39108d543542a49eed7420d445d2536',
-  'jsonRpc' => [
-    'method'=>'sendTransaction',
-    'params'=>["0x1a1c2606636861696e30360667726f757030411044564e313132343839343038393630343334313535363636383839393339353934333631353930313239333432313236383932343438333431333637323338313536333931333939343838313634353938662a3078393964366264383836633130346261303637363634653738353961646134306633386265326335357d00004440c10f190000000000000000000000007f7cd0133ba23aca1140dd41180e07b9873c566400000000000000000000000000000000000000000000000000000000000000010b2d0000203ac02bbaca5e7e0adc05d0e36954c86ee39108d543542a49eed7420d445d25363d000041c2075f2495a49cfbb6dc4523568a22226dcbe86bfdff01da7bcdd04ae3e46bd6074436da0cfcb5712e1676e90d42d7709202c266ca1c89d8c947d1244a783389005001",false]
-  ]
-];
-
+// $blockLimitReq = [
+//   'jsonRpc' => [
+//     'method'=>'getBlockLimit',
+//     'params'=>[]
+//   ]
+// ];
 
 $contractAddress = "0xc0f2254a5e506d6cda5e5ccd98ced32bd0e81609";
 $tokenId = "1000";
-$inputOwnerOf = Util::formatInputOwnerOf($tokenId);
-echo "Input for ownerOf:" . $inputOwnerOf . "\n";
-$getOwnerOfReq = [
-  'jsonRpc' => [
-    'method'=>'call',
-    'params'=>[$contractAddress,$inputOwnerOf]
-  ]
-];
-
-//请求tokenOwner地址，token未铸造，返回空
-function requestTokenOwner($contractAddress,$tokenId){
-  global $query_url,$getOwnerOfReq,$mechatNo,$rsa;
-  $response = Util::http_post($query_url,$getOwnerOfReq,$mechatNo,$rsa);
-  
-  // Util::echo_response($response);
-  
-  $obj = json_decode($response->response);
-  if($obj->{'code'} != "EC000000"){
-    echo "requestTokenOwner error:" . $obj->{"message"};
-    return "";
-  }
-  $output = $obj->data->jsonRpcResp->result->output;
-  if(strlen($output) == 66){
-    return "0x" . substr($output,26);
-  }else{
-    return "";
-  }
-}
-
-echo "Owner of req payload:" . json_encode($getOwnerOfReq) . "\n";
 
 //$url_base = "http://10.168.3.30:8080";
 $url_base = "http://api.e-chain.net.cn:8310";
 $query_url = $url_base . "/chain/rpc/query";
 $sendtx_url = $url_base . "/chain/rpc/tx";
 
-$response = Util::http_post($query_url,$blockNumberReq,$mechatNo,$rsa);
-echo '查询 blockNumber:' . "\n";
-Util::echo_response($response);
+try{
+  $blockNumber = Util::requestBlockNumber($query_url,$mechatNo,$rsa);
+  echo '查询 blockNumber:' . $blockNumber . "\n";
+}catch(Exception $e){
+  echo "查询区块号异常：" . $e->getMessage(); 
+}
 echo "\n";
 
-$response = Util::http_post($query_url,$blockLimitReq,$mechatNo,$rsa);
-echo '查询 blockLimit:' . "\n";
-Util::echo_response($response);
+
+// $response = Util::http_post($query_url,$blockLimitReq,$mechatNo,$rsa);
+// echo '查询 blockLimit:' . "\n";
+// Util::echo_response($response);
+// echo "\n";
+
+try{
+  $txHash = "0x3ac02bbaca5e7e0adc05d0e36954c86ee39108d543542a49eed7420d445d2536";
+  $receipt = Util::requestTransactionReceipt($query_url,$mechatNo,$rsa,$txHash);
+  echo '查询 transactionReceipt:' . json_encode($receipt) . "\n";
+  if($receipt->statusOK){
+    echo "交易上链成功\n";
+  }else{
+    echo "交易上链失败\n";
+  }
+}catch(Exception $e){
+  echo "查询交易收据异常：" . $e->getMessage(); 
+}
 echo "\n";
 
-$response = Util::http_post($query_url,$getTxReceiptReq,$mechatNo,$rsa);
-echo '查询 transactionReceipt:' . "\n";
-Util::echo_response($response);
+try{
+  $address = Util::requestTokenOwner($query_url,$mechatNo,$rsa,$contractAddress,$tokenId);
+  echo '查询 token所有者地址:' . "\n";
+  echo "Owner地址：" . $address  . "\n";
+}catch(Exception $e){
+  echo "查询token所有者异常:" . $e->getMessage(); 
+}
 echo "\n";
 
-echo '查询 token所有者地址:' . "\n";
-$address = requestTokenOwner($contractAddress,$tokenId);
-echo "Owner地址：" . $address  . "\n";
-echo "\n";
 
-$response = Util::http_post($sendtx_url,$sendTxReq,$mechatNo,$rsa);
-echo '交易发送:' . "\n";
-Util::echo_response($response);
+try{
+  $txHash = "0x3ac02bbaca5e7e0adc05d0e36954c86ee39108d543542a49eed7420d445d2536";
+  $txSigned = "0x1a1c2606636861696e30360667726f757030411044564e313132343839343038393630343334313535363636383839393339353934333631353930313239333432313236383932343438333431333637323338313536333931333939343838313634353938662a3078393964366264383836633130346261303637363634653738353961646134306633386265326335357d00004440c10f190000000000000000000000007f7cd0133ba23aca1140dd41180e07b9873c566400000000000000000000000000000000000000000000000000000000000000010b2d0000203ac02bbaca5e7e0adc05d0e36954c86ee39108d543542a49eed7420d445d25363d000041c2075f2495a49cfbb6dc4523568a22226dcbe86bfdff01da7bcdd04ae3e46bd6074436da0cfcb5712e1676e90d42d7709202c266ca1c89d8c947d1244a783389005001";
+  $response = Util::requestSendTx($sendtx_url,$mechatNo,$rsa,$txHash,$txSigned);
+  echo '发送交易:' . "\n";
+  if($response){
+    echo "发送成功\n";
+  }else{
+    echo "发送失败\n";
+  }
+}catch(Exception $e){
+  echo "发送交易异常：" . $e->getMessage(); 
+}
+
 
