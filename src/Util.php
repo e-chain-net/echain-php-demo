@@ -44,7 +44,6 @@ class Util{
       $curl = curl_init();
     
       curl_setopt_array($curl, [
-        CURLOPT_PORT => "8080",
         CURLOPT_URL => $url,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => "",
