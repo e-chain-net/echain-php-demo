@@ -81,4 +81,12 @@ class Util{
         $formatMethodOwnerOf = Formatter::toMethodFormat("ownerOf(uint256)");
         return "0x{$formatMethodOwnerOf}{$formatTokenId}";
     }
+
+    public static function generateAccounts($sdk,$count){
+      $accounts = array();
+      for($i = 0; $i < $count; $i++){
+        array_push($accounts,$sdk->generateAccount());
+      }
+      return $accounts;
+    }
 }
