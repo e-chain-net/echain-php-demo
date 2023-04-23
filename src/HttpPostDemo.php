@@ -73,8 +73,10 @@ function requestTokenOwner($contractAddress,$tokenId){
 
 echo "Owner of req payload:" . json_encode($getOwnerOfReq) . "\n";
 
-$query_url = "http://api.e-chain.net.cn:8310/chain/rpc/query";
-$sendtx_url = "http://api.e-chain.net.cn:8310/chain/rpc/tx";
+//$url_base = "http://10.168.3.30:8080";
+$url_base = "http://api.e-chain.net.cn:8310";
+$query_url = $url_base . "/chain/rpc/query";
+$sendtx_url = $url_base . "/chain/rpc/tx";
 
 $response = Util::http_post($query_url,$blockNumberReq,$mechatNo,$rsa);
 echo '查询 blockNumber:' . "\n";
