@@ -23,12 +23,6 @@ if($argc == 2){
 }
 echo "tokenId:" . $tokenId . "\n\n";
 
-function testAccount(){
-    global $sdk;
-    $account = $sdk->generateAccount();
-    echo "address:" . $account->address . "\n";
-    echo "private:" . $account->private . "\n\n";
-}
 
 function testSignMint(){
     global $sdk,$contractAddress,$tokenId,$contractOwner,$tokenOwner1,$blockNumber;
@@ -55,7 +49,6 @@ function testSignBurn(){
     echo "Burn signed:" . $signRes->signed . "\n\n";
 }
 
-testAccount();
 testSignMint();
 testSignTransfer();
 testSignBurn();
