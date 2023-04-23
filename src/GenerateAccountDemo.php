@@ -14,15 +14,15 @@ $sdk = SignSDK::getInstance();
 function testAccount(){
     global $sdk;
     $account = $sdk->generateAccount();
-    echo "生成单个账户：\n";
     echo "address:" . $account->address . "\n";
     echo "private:" . $account->private . "\n\n";
 }
 
+echo "生成单个账户：\n";
 testAccount();
 
 
-
+echo "批量生成账户：\n";
 //测试批量生成账户的性能
 $start = Util::getMilliseconds();
 $count = 10;
