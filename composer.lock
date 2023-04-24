@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "10e8f6e181e3ed3fbe2b83cc9366f981",
+    "content-hash": "f7d3965f9364516084d6ee7856187ab5",
     "packages": [
         {
             "name": "echain/fisco-php",
-            "version": "1.3",
+            "version": "1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/e-chain-net/echain-php-sdk.git",
-                "reference": "b306e1bc37a5f8938a3681ec6ca23b3bbc4aedcd"
+                "reference": "2c781c7fc9265fdafc3d4f0e970fda15eedabb23"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/e-chain-net/echain-php-sdk/zipball/b306e1bc37a5f8938a3681ec6ca23b3bbc4aedcd",
-                "reference": "b306e1bc37a5f8938a3681ec6ca23b3bbc4aedcd",
+                "url": "https://api.github.com/repos/e-chain-net/echain-php-sdk/zipball/2c781c7fc9265fdafc3d4f0e970fda15eedabb23",
+                "reference": "2c781c7fc9265fdafc3d4f0e970fda15eedabb23",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -53,9 +53,9 @@
             ],
             "support": {
                 "issues": "https://github.com/e-chain-net/echain-php-sdk/issues",
-                "source": "https://github.com/e-chain-net/echain-php-sdk/tree/1.3"
+                "source": "https://github.com/e-chain-net/echain-php-sdk/tree/1.6"
             },
-            "time": "2023-04-14T06:56:13+00:00"
+            "time": "2023-04-24T03:08:29+00:00"
         },
         {
             "name": "kornrunner/keccak",
