@@ -9,6 +9,7 @@ use EChainDemo\Util;
 class EChainClient{
     private $urlQuery;
     private $urlSendTx;
+    private $urlDeploy;
     private $merchantNo;
     private $rsa;
 
@@ -20,10 +21,11 @@ class EChainClient{
      * @param $rsaPublic RSA公钥
      * @param $rsaPrivate RSA私钥
      */
-    public function __construct($urlQuery,$urlSendTx,$merchantNo,$rsaPublic,$rsaPrivate)
+    public function __construct($urlBase,$merchantNo,$rsaPublic,$rsaPrivate)
     {
-        $this->urlQuery = $urlQuery;
-        $this->urlSendTx = $urlSendTx;
+        $this->urlQuery = $urlBase . "/chain/rpc/query";
+        $this->urlSendTx = $urlBase . "/chain/rpc/tx";
+        $this->urlDeploy = $urlBase . "/chain/contract/deploy";
         $this->merchantNo = $merchantNo;
         $this->rsa = new Rsa($rsaPublic,$rsaPrivate);
     }
@@ -128,5 +130,27 @@ class EChainClient{
           return false;
         }
         return true;
+    }
+    /**
+     * 请求部署合约
+     * @param $reqNo  请求号，一个标识交易请求的唯一ID
+     * @param $owner  合约拥有者地址
+     * @return  新部署合约的地址
+     */
+    public function requestDeployContract($reqNo,$owner){
+        $deployReq = [
+          'reqNo'=>$reqNo,
+          'contractType' => "ERC721",
+          'owner' => $owner
+        ];
+        $response = Util::http_post($this->urlDeploy,$deployReq,$this->merchantNo,$this->rsa);
+        if($response->error != ""){
+          throw new Exception($response->error);
+        }
+        $obj = json_decode($response->response);
+        if($obj->code != "EC000000"){
+          throw new Exception($obj->message);
+        }
+        return $obj->data->contractAddress;
     }
 }

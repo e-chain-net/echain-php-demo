@@ -12,12 +12,11 @@ $rsaPrivate = 'MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCY/i3wvgeqo1gSu
 $merchantNo = '1020000189025321';
 
 //$url_base = "http://10.168.3.30:8080";
-$url_base = "http://api.e-chain.net.cn:8310";
-$query_url = $url_base . "/chain/rpc/query";
-$sendtx_url = $url_base . "/chain/rpc/tx";
+$urlBase = "https://qa-api.e-chain.net.cn";
 
-$client = new EChainClient($query_url,$sendtx_url,$merchantNo,$rsaPublic,$rsaPrivate);
+$client = new EChainClient($urlBase,$merchantNo,$rsaPublic,$rsaPrivate);
 
+//查询链上最新区块号
 try{
   $blockNumber = $client->requestBlockNumber();
   echo '查询 blockNumber:' . $blockNumber . "\n";
@@ -26,6 +25,7 @@ try{
 }
 echo "\n";
 
+//查询交易收据
 try{
   $txHash = "0x3ac02bbaca5e7e0adc05d0e36954c86ee39108d543542a49eed7420d445d2536";
   $receipt = $client->requestTransactionReceipt($txHash);
@@ -40,6 +40,7 @@ try{
 }
 echo "\n";
 
+//查询token所有者地址
 try{
   $contractAddress = "0xc0f2254a5e506d6cda5e5ccd98ced32bd0e81609";
   $tokenId = "1000";
@@ -51,7 +52,23 @@ try{
 }
 echo "\n";
 
+//请求部署合约
+try{
+  $reqNo = "123";
+  $owner = "0x90b8236912efdb64abbd59798375129c3594fe9f";
+  $response = $client->requestDeployContract($reqNo,$owner);
+  echo '部署合约:' . "\n";
+  if($response){
+    echo "合约地址：" . $response ."\n";
+  }else{
+    echo "请求失败\n";
+  }
+}catch(Exception $e){
+  echo "部署合约异常：" . $e->getMessage(); 
+}
+echo "\n";
 
+//请求发起一笔交易
 try{
   //txHash,txSigned通过签名接口返回，参考SignDemo
   $txHash = "0x3ac02bbaca5e7e0adc05d0e36954c86ee39108d543542a49eed7420d445d2536";
