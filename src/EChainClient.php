@@ -76,7 +76,7 @@ class EChainClient{
         if($obj->code != "EC000000"){
           throw new Exception($obj->message);
         }
-        $output = $obj->data->jsonRpcResp->result->output;
+        $output = $obj->data->result->output;
         if(strlen($output) == 66){
           return "0x" . substr($output,26);
         }else{
