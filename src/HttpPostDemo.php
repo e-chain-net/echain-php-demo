@@ -30,7 +30,7 @@ try{
   $txHash = "0x3ac02bbaca5e7e0adc05d0e36954c86ee39108d543542a49eed7420d445d2536";
   $receipt = $client->requestTransactionReceipt($txHash);
   echo '查询 transactionReceipt:' . json_encode($receipt) . "\n";
-  if($receipt->statusOK){
+  if($receipt->result->statusOK){
     echo "交易上链成功\n";
   }else{
     echo "交易上链失败\n";
